@@ -9,3 +9,5 @@
 | **UC-5: System Administration** | Administrators are able to create policies, manage integrations, and monitor usage using the admin dashboard. | RA1, RA2, RA4, R3 |
 | **UC-6: System Maintenance** | Maintainers keep track and check error logs, create any backups, and arrange the AI settings. | RM2, RM3, RM4, RM6, RM7 |
 
+### Use Case Diagram
+![AIDAP Use Case Diagram](./Project%20Use%20Case%20Diagram.drawio.png)
