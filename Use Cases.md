@@ -7,5 +7,5 @@
 | **UC-3: Course Management** | Lecturers are able to upload or modify course content, keep track of statistics, keep track of TA permissions, and post announcements. | RL1, RL2, RL3, RL4, RL5, RL6, RL7, R4, R5 |
 | **UC-4: Notifications** | Students can see any updates in the course schedule, course alerts,upcoming exam dates, and announcements in their language. | RS2, RS6 |
 | **UC-5: System Administration** | Administrators are able to create policies, manage integrations, and monitor usage using the admin dashboard. | RA1, RA2, RA4, R3 |
-| **UC-6: System Maintenance** | Maintainers keep track and check error logs, mcrarte any backups, and arrange the AI settings. | RM2, RM3, RM4, RM6, RM7 |
+| **UC-6: System Maintenance** | Maintainers keep track and check error logs, create any backups, and arrange the AI settings. | RM2, RM3, RM4, RM6, RM7 |
 
