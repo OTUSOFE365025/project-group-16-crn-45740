@@ -8,3 +8,5 @@
 | **CON-6** | Only authorized users can access data relevant to their roles (student, lecturer, or admin), and unauthorized attempts must be logged for auditing. |
 | **CON-7** | The system must automatically perform backups of user interactions, model configurations, and system data to ensure recovery in case of a failure. |
 | **CON-8** | Notifications, alerts, and announcements must reach the correct users based on their preferences and chosen language. |
+| **CON-9** | System performance and availability metrics must be tracked in real time and displayed on a dashboard accessible only to maintainers and administrators. |
+| **CON-10** | The user interface must be responsive across web and mobile browsers, and follow the institution’s accessibility and branding guidelines. |
