@@ -1,4 +1,3 @@
-Include in this file the 7 steps for Iteration 1
 # ADD Iteration 1 – Establishing Overall System Structure  
 **AI-Powered Digital Assistant Platform (AIDAP)**
 
