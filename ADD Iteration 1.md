@@ -204,35 +204,26 @@ Later iterations will refine specific components and use cases.
 
 ## Step 7: Analysis of Current Design (Kanban Progress)
 
-The following table summarizes the progress made in Iteration 1 toward addressing the drivers (use cases, quality attributes, constraints, and concerns). At this stage, all drivers should be **partially addressed**, because Iteration 1 only establishes the system’s overall structure.
+The table below summarizes the progress made in Iteration 1 toward addressing all drivers (use cases, quality attributes, constraints, and architectural concerns).  
+As expected for Iteration 1, all drivers are **partially addressed**, because this iteration focuses on establishing the overall system structure.
 
-| Driver | Not Addressed | Partially Addressed | Fully Addressed | Notes |
-|--------|---------------|---------------------|------------------|-------|
-| **UC-1: Student AI Assistant** |  | ✓ |  | AI Service + Gateway support conversational queries; detailed behavior refined in later iterations. |
-| **UC-2: Academic Dashboard** |  | ✓ |  | Dashboard Service defined to aggregate deadlines, grades, and analytics. |
-| **UC-3: Course Management** |  | ✓ |  | Course Management Service included, enabling lecturer workflows. |
-| **UC-4: Notifications** |  | ✓ |  | Notification Service planned; rules and triggers handled in later iterations. |
-| **UC-5: System Administration** |  | ✓ |  | Admin policies supported via Integration, Monitoring, and Gateway components. |
-| **UC-6: System Maintenance** |  | ✓ |  | Logging/Monitoring Services defined to support maintainers. |
-
-| **Quality Attribute** | Not Addressed | Partially Addressed | Fully Addressed | Notes |
-|-----------------------|---------------|---------------------|------------------|-------|
-| **QA-1: Performance** |  | ✓ |  | Caching, autoscaling, and load balancing selected to meet performance goals. |
-| **QA-2: Availability** |  | ✓ |  | Multi-node deployment and automatic failover addressed in the design. |
-| **QA-3: Security** |  | ✓ |  | SSO, Gateway authentication, and encrypted storage identified; detailed enforcement later. |
-| **QA-4: Modifiability** |  | ✓ |  | Microservices structure supports easy addition/modification of components. |
-| **QA-6: Scalability** |  | ✓ |  | Cloud autoscaling and message queues ensure scalability under heavy load. |
-| **QA-7: Reliability** |  | ✓ |  | Use of Redis cache and retry logic provides fallback during external system failures. |
-
-| **Constraints (CON-1 to CON-10)** | Not Addressed | Partially Addressed | Fully Addressed | Notes |
-|----------------------------------|---------------|---------------------|------------------|-------|
-| **All Constraints** |  | ✓ |  | All constraints are incorporated into the high-level architecture; fine details handled in later iterations. |
-
-| **Architectural Concerns (CRN-1 to CRN-5)** | Not Addressed | Partially Addressed | Fully Addressed | Notes |
-|---------------------------------------------|---------------|---------------------|------------------|-------|
-| **All Concerns** |  | ✓ |  | Concerns about integration, security, model updates, cloud scalability, and UI addressed conceptually. |
+| Driver Type | Driver ID | Description | Not Addressed | Partially Addressed | Fully Addressed | Notes |
+|-------------|-----------|-------------|---------------|---------------------|------------------|-------|
+| **Use Case** | UC-1 | Student AI Assistant |  | ✓ |  | Supported by AI Service + API Gateway; detailed logic refined in later iterations. |
+| **Use Case** | UC-2 | Academic Dashboard |  | ✓ |  | Dashboard Service included; aggregation logic to be refined later. |
+| **Use Case** | UC-3 | Course Management |  | ✓ |  | Course Management Service defined; workflows refined in later iterations. |
+| **Use Case** | UC-4 | Notifications |  | ✓ |  | Notification Service identified; rules and event triggers defined later. |
+| **Use Case** | UC-5 | System Administration |  | ✓ |  | Admin functions supported through Gateway, Monitoring, Integration Services. |
+| **Use Case** | UC-6 | System Maintenance |  | ✓ |  | Logging and Monitoring Service addresses maintainer needs. |
+| **Quality Attribute** | QA-1 | Performance |  | ✓ |  | Autoscaling, caching, and async processing reduce latency. |
+| **Quality Attribute** | QA-2 | Availability |  | ✓ |  | Multi-instance deployment + load balancing planned. |
+| **Quality Attribute** | QA-3 | Security |  | ✓ |  | SSO, API Gateway, encryption planned; enforcement refined later. |
+| **Quality Attribute** | QA-4 | Modifiability |  | ✓ |  | Microservices enable independent updates. |
+| **Quality Attribute** | QA-6 | Scalability |  | ✓ |  | Cloud-native autoscaling supports growth. |
+| **Quality Attribute** | QA-7 | Reliability |  | ✓ |  | Redis fallback + retry logic for external service failures. |
+| **Constraint** | CON-1–10 | All system constraints |  | ✓ |  | All constraints addressed in high-level architecture. |
+| **Concern** | CRN-1–5 | All architectural concerns |  | ✓ |  | Integration, security, model updates, scalability, UI concerns considered. |
 
 ### **Iteration Goal Status**
-
-The goal of Iteration 1 — **establishing the overall system structure for AIDAP** — has been **successfully achieved**.  
-All drivers have been **partially addressed**, which is appropriate for this stage of the ADD process. Detailed refinement will occur in Iteration 2.
+The goal of Iteration 1—**establishing the overall system structure for AIDAP**—has been successfully achieved.  
+All drivers are **partially addressed**, which is appropriate for this stage of the ADD process. Further refinement and detailed behavior will be completed in Iteration 2.
