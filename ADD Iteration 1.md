@@ -37,14 +37,17 @@ These use cases span all user roles and require external data access, security, 
 
 The following QAs have the highest impact and difficulty and are selected as **drivers**:
 
-| ID | Quality Attribute | Reason |
-|----|------------------|--------|
-| **QA-1: Performance** | Must handle 5,000+ concurrent queries with \< 2s latency. |
-| **QA-2: Availability** | System must recover from node failure within 30 seconds (≈99.5% uptime). |
-| **QA-3: Security** | SSO authentication, audit logging, and protected student data. |
-| **QA-4: Modifiability** | Add new data sources or AI models in \< 2 days of effort. |
-| **QA-6: Scalability** | Auto-scale to 10,000 sessions during peak periods. |
-| **QA-7: Reliability** | Must provide cached/fallback data when LMS is unavailable. |
+| **Scenario**          | **Importance to the Customer** | **Difficulty of Implementation (Architect)** |
+|-----------------------|--------------------------------|---------------------------------------------|
+| QA-1: Performance     | High                           | High                                        |
+| QA-2: Availability    | High                           | High                                        |
+| QA-3: Security        | High                           | Medium                                      |
+| QA-4: Modifiability   | High                           | Medium                                      |
+| QA-5: Usability       | Medium                         | Medium                                      |
+| QA-6: Scalability     | High                           | High                                        |
+| QA-7: Reliability     | Medium                         | Medium                                      |
+| QA-8: Interoperability| High                           | Medium                                      |
+| QA-9: Maintainability | Medium                         | Medium                                      |
 
 ---
 
@@ -52,28 +55,28 @@ The following QAs have the highest impact and difficulty and are selected as **d
 
 | ID | Constraint |
 |----|------------|
-| **CON-1** Must integrate with LMS/Registration systems using REST/GraphQL APIs. |
-| **CON-2** Must use institution’s SSO for authentication. |
-| **CON-3** Must be deployed on a cloud environment. |
-| **CON-4** All data must be encrypted in transit and at rest. |
-| **CON-5** System must maintain \< 2s average response time under normal load. |
-| **CON-6** Only authorized users can access protected data; all access must be logged. |
-| **CON-7** Automatic backups must be enabled for interactions, configurations, and data. |
-| **CON-8** Notifications must respect user preferences and language settings. |
-| **CON-9** Real-time system monitoring must be available to admins/maintainers. |
-| **CON-10** UI must be responsive across web/mobile and meet accessibility standards. |
+ **CON-1** | The AIDAP platform must connect securely with existing university systems such as registration, calendar, and LMS using standard REST or GraphQL APIs to exchange data in real time. |
+| **CON-2** | All users are required to authenticate through the institution’s Single Sign-On (SSO) before using any of the assistant’s features. |
+| **CON-3** | The system has to be deployed on a cloud environment to allow flexible scaling and continuous availability, even when updates or patches are applied. |
+| **CON-4** | User and institutional data must be encrypted during storage and transmission, and handled according to the university’s privacy and security standards. |
+| **CON-5** | The AI assistant should respond to user queries with an average latency of around 2 seconds under normal load. |
+| **CON-6** | Only authorized users can access data relevant to their roles (student, lecturer, or admin), and unauthorized attempts must be logged for auditing. |
+| **CON-7** | The system must automatically perform backups of user interactions, model configurations, and system data to ensure recovery in case of a failure. |
+| **CON-8** | Notifications, alerts, and announcements must reach the correct users based on their preferences and chosen language. |
+| **CON-9** | System performance and availability metrics must be tracked in real time and displayed on a dashboard accessible only to maintainers and administrators. |
+
 
 ---
 
 ### 1.5 Architectural Concerns
 
 | ID | Concern |
-|----|---------|
-| **CRN-1** Integrating multiple external systems and ensuring data consistency and fault recovery. |
-| **CRN-2** Protecting sensitive user data and complying with privacy regulations. |
-| **CRN-3** Managing AI model versions and updates without impacting availability. |
-| **CRN-4** Using cloud-based patterns (auto-scaling, load balancing, messaging) to improve scalability and availability. |
-| **CRN-5** Maintaining a multilingual responsive UI with fast interactions and good usability. |
+|:----------------|--------------|
+| **CRN-1** |Maintaining multiple integrated external systems and other data resources , along with ensuring data consistency,synchronization and fault recovery when the systems experience downtime.
+| **CRN-2** | Protection of user’s data that is sensitive and ensure compliance with privacy regulations, since the AIDP system saves historical interactions of its users. 
+| **CRN-3** |Managing AI model updates and configuration by supporting configuration of AI model versions and API keys,and ensuring that model updates do not interrupt service availability  
+| **CRN-4** |Having cloud-based architecture patterns(auto-scaling, message queues, etc.) to improve scalability and availability 
+| **CRN-5** |Maintaining intuitive, multi-language UI with fast responses (<2 s) during input and output, focusing on usability and accessibility across devices
 
 ---
 
@@ -82,19 +85,15 @@ The following QAs have the highest impact and difficulty and are selected as **d
 ### Iteration Goal
 **Establish an overall system structure for AIDAP.**
 
-This iteration focuses on:
-- Selecting reference architectures
-- Identifying main tiers and components
-- Designing cloud-native deployment structure
-- Ensuring support for early drivers: availability, scalability, security, integration, and performance
+The goal of this iteration is to establish an overall system structure for AIDAP. This will also go a long way to achieving CRN-1 which focuses on maintaining the multiple integrated external systems and other data resources, thus it will be our main iteration goal.
+In the design of the overall system is the architecture should be mindful of : 
+  -all the selected Quality Attribute Scenario drivers : QA-1, QA-2, QA-3, QA-4, QA-6, QA-8
+  -all the selected Use Case drivers: UC-1, UC-2, UC-3, UC-5
+  -CON-1: The AIDAP platform must connect securely with existing university systems such as registration, calendar, and LMS using                 standard REST or GraphQL APIs to exchange data in real time.
+  -CON-3: The system has to be deployed on a cloud environment to allow flexible scaling and continuous availability, even when updates           or patches are applied.
+   -CON-7: The system must automatically perform backups of user interactions, model configurations, and system data to ensure recovery            in case of a failure.
 
-### Most Relevant Drivers for This Iteration
-
-- **Quality Attributes:** QA-1, QA-2, QA-3, QA-4, QA-6, QA-7  
-- **Constraints:** CON-1, CON-2, CON-3, CON-5  
-- **Concerns:** CRN-1, CRN-2, CRN-3, CRN-4  
-
-These strongly influence technology and structural choices.
+**CONTEXT DIAGRAM:**
 
 ---
 
@@ -104,101 +103,45 @@ Since AIDAP is a **greenfield system**, the element to refine in Iteration 1 is:
 
 > **The entire AIDAP system as one coarse-grained architectural element.**
 
-Later iterations will refine specific components and use cases.
+This refers to the whole AIDAP system that entails user workstations and the external university data source systems. In this case, refinement is performed through decomposition of the overall AIDAP system into its major client-side, server-side, and integration elements.
+
 
 ---
 
 ## Step 4: Choose Design Concepts
 
-### 4.1 Reference Architecture
+| **Design Decision** | **Rationale** |
+|---------------------|---------------|
+| Logically structure the client part of the system using a Rich Internet Application (RIA) reference architecture | This decision centralizes access control, SSO authentication, routing, and rate limiting, ensuring consistent enforcement of system security policies. It supports the need for high availability and performance under load by optimizing request handling and reducing unnecessary communication to downstream services. This architectural choice also simplifies integration with external university systems by providing a stable facade for all client interactions. |
+| Logically structure the server part of the system using a Service Application reference architecture | Service applications do not provide a UI; they expose services consumed by clients. This fits AIDAP’s layered backend where Conversation, Dashboard, Course Management, and Admin services are accessed via HTTP APIs. It supports QA-4 (modifiability) and QA-8 (interoperability). |
+| Physically structure the application using a three-tier deployment pattern (client–app–data) | A three-tier deployment fits the use of web and mobile clients (CON-2), a separate application tier (cloud compute), and a managed database tier (CON-3). It leaves room for later replication of the app and data tiers to address QA-2 and QA-6. |
+| Introduce an API Gateway at the edge of the application tier | Centralizes SSO token validation (CON-2), RBAC enforcement (CON-6), rate limiting, and logging (QA-3, CRN-2). It also simplifies versioning and routing between services, helping QA-4 and QA-8. |
+| Use adapter components for each external academic system | A cloud-native deployment model satisfies the system constraints for continuous availability and flexible scaling as demanded by academic activity cycles. It enables rapid provisioning of resources during peak load events, minimizing response times and downtime. This model also improves resilience through built-in monitoring, health checks, and multi-zone redundancy. |
+| Plan to use auto-scaling and stateless services for core application components | Stateless micro-services (Conversation, Dashboard, Course Management, Admin) are easier to scale horizontally, addressing QA-1 (under load) and QA-6 (scalability spikes). |
+| Separate an AI Orchestrator component from conversational and business services | Keeps AI model integration concerns isolated, allowing CRN-3 (model upgrades) and QA-4 (modifiability) to be handled cleanly without impacting most of the system. |
 
-**Chosen:** **Service-Based Architecture (Microservices)**
-
-**Rationale:**
-- Supports **autoscaling** of individual services (QA-6).
-- Enables independent deployment and updates for AI, notifications, dashboards (QA-4, CRN-3).
-- Provides fault isolation to improve **availability** (QA-2).
-- Aligns with **cloud deployment** requirement (CON-3, CRN-4).
-- Clear boundaries for integration services working with external systems (CON-1, CRN-1).
-
+---
 **Discarded Alternatives:**
+| **Alternative** | **Rationale** |
+|-----------------|---------------|
+| Traditional Web Application (server-rendered HTML only) | Would simplify deployment but make it harder to deliver rich, interactive chat and dashboard UIs comparable to RIA frameworks; less aligned with long-lived conversational UI needed for UC-1 and multi-panel dashboards in UC-2. |
+| Thick Desktop Client | Not aligned with CON-2 (web access, multi-OS environment) and institutional deployment realities; increases maintenance complexity compared to browser-based clients. |
+| Mobile-only Application | Would not cover lecturers and administrators who are expected to use desktops or laptops; dashboards and admin consoles would require large screens. |
 
-| Alternative | Reason Discarded |
-|------------|------------------|
-| **Monolithic Web Application** | Poor scalability for 5,000–10,000 users; tightly coupled integrations; harder to evolve AI components. |
-| **Desktop Rich Client Application** | Not suitable for multi-device, browser-based access required by students and staff (CON-10). |
-| **Pure Serverless Architecture** | Cold start delays can hurt 2s latency requirement (QA-1); complex coordination for long-running AI tasks. |
-
----
-
-### 4.2 Deployment Pattern
-
-**Chosen:** **Cloud-native 3-tier architecture with autoscaling**
-
-**Tiers:**
-1. **Presentation Tier:** Web and mobile clients (browser, mobile app).
-2. **Application Tier:** Microservices (API Gateway, AI, Dashboard, Notifications, etc.).
-3. **Data Tier:** Databases, caches, backup storage, object storage.
-
-**Rationale:**
-- Enforces separation of concerns.
-- Allows independent scaling of UI, services, and data layers.
-- Fits naturally with cloud load balancers and managed databases (CON-3, CRN-4).
-
----
-
-### 4.3 Supporting Design Concepts
-
-| Concept | Purpose / Driver |
-|--------|-------------------|
-| **API Gateway** | Single entry point; handles SSO integration, routing, rate limiting, request validation (CON-1, CON-2, QA-3). |
-| **Message Queue (e.g., Kafka/SQS)** | Handles asynchronous jobs such as notifications, logging, heavy AI tasks (QA-1, QA-2, QA-6). |
-| **Caching Layer (Redis/Memcached)** | Reduces latency and provides cached data when external systems are down (QA-1, QA-7). |
-| **Load Balancer** | Distributes requests across service instances, improving availability and scalability (QA-2, QA-6). |
-| **Central Logging & Monitoring** | Exposes metrics to admins/maintainers, supports error diagnosis (CON-9, UC-6). |
-
----
 
 ## Step 5: Instantiate Architectural Elements and Responsibilities
 
-### 5.1 Client Tier (Presentation Layer)
-
-| Component | Responsibilities |
-|----------|------------------|
-| **Web/Mobile UI** | Provides conversational interface, dashboards, and management screens for all roles. |
-| **Input/Voice Handler** | Captures text/voice input, supports multi-language, packages requests for the backend. |
-| **SSO Authentication UI** | Redirects to university SSO, handles login/logout and token retrieval. |
-
----
-
-### 5.2 Application Tier (Backend Microservices)
-
-| Component | Responsibilities |
-|----------|------------------|
-| **API Gateway** | Authenticates requests via SSO tokens, enforces rate limiting, routes requests to internal services, performs basic validation. |
-| **AI Processing Service** | Interprets natural-language queries, calls AI models, applies context from user history, returns structured responses. |
-| **User Profile Service** | Manages user profiles, preferences (language, notifications), and conversation history. |
-| **Dashboard Service** | Aggregates and formats deadlines, grades, upcoming events, and analytics for the Academic Dashboard (UC-2). |
-| **Course Management Service** | Supports lecturers in uploading, updating, and managing course materials and analytics (UC-3). |
-| **Integration Service** | Connects to external LMS, Registration, Calendar, and Email systems via REST/GraphQL (CON-1, CRN-1). |
-| **Notification Service** | Sends notifications and announcements based on user preferences and language (UC-4, CON-8). |
-| **Monitoring & Logging Service** | Collects metrics, audit logs, error reports; exposes dashboards for maintainers (UC-6, CON-9, QA-3). |
-| **Model Management Service** | Manages AI model versions, configuration, and rollout with minimal downtime (CRN-3, QA-4). |
-
----
-
-### 5.3 Data Tier
-
-| Component | Responsibilities |
-|----------|------------------|
-| **Cloud Database (SQL/NoSQL)** | Stores users, roles, preferences, interactions, dashboard data, and configuration. |
-| **Object Storage** | Stores large artifacts such as course files, exported reports, and media. |
-| **Redis Cache** | Caches frequently accessed data (e.g., schedules, grades) and holds fallback information when external systems are unavailable (QA-7). |
-| **Backup Storage** | Holds automatic backups of database and configuration data to support disaster recovery (CON-7). |
+| **Design Decision and Location** | **Rationale** |
+|----------------------------------|---------------|
+| Remove local persistence in clients; treat them as “thin” in terms of data | Network connectivity in campus environments is generally reliable, and session state will be primarily maintained on the server side. This simplifies client updates and avoids data consistency issues. |
+| Create a dedicated Integration layer in the Service Application architecture | Introduces LMSAdapter, SISAdapter, CalendarAdapter, EmailAdapter modules in the server data layer. These abstract external APIs and directly contribute to QA-8 and CON-1. |
+| Introduce a separate AIOrchestrator module in the server business logic layer | Encapsulates logic for building prompts, choosing models, and merging external data into responses. This supports UC-1 and QA-4 and addresses CRN-3 by providing a clear point for model upgrades. |
+| Introduce distinct backend services for Conversation, Dashboard, CourseManagement, and Admin | Splitting services along primary use cases supports QA-4 (modifiability) and prepares for later scaling decisions per service (QA-6). |
 
 ---
 
 ## Step 6: Sketch Views and Record Design Decisions
+**MODULE VIEW DIAGRAM:**
 
 ### Table 6.1 – Module and Layer Descriptions
 
@@ -244,6 +187,8 @@ Later iterations will refine specific components and use cases.
 | ConversationTurn     | Represents a single message exchange within a conversation session, including user input and system response. |
 
 
+**DEPLOYMENT VIEW DIAGRAM:**
+
 ### Table 6.2 – Deployment Elements and Responsibilities
 
 | Element                     | Responsibility |
@@ -274,25 +219,25 @@ Later iterations will refine specific components and use cases.
 ## Step 7: Analysis of Current Design (Kanban Progress)
 
 The table below summarizes the progress made in Iteration 1 toward addressing all drivers (use cases, quality attributes, constraints, and architectural concerns).  
-As expected for Iteration 1, all drivers are **partially addressed**, because this iteration focuses on establishing the overall system structure.
+As expected for Iteration 1, most drivers are **partially addressed**, because this iteration focuses on establishing the overall system structure.
 
-| Driver Type | Driver ID | Description | Not Addressed | Partially Addressed | Fully Addressed | Notes |
-|-------------|-----------|-------------|---------------|---------------------|------------------|-------|
-| **Use Case** | UC-1 | Student AI Assistant |  | ✓ |  | Supported by AI Service + API Gateway; detailed logic refined in later iterations. |
-| **Use Case** | UC-2 | Academic Dashboard |  | ✓ |  | Dashboard Service included; aggregation logic to be refined later. |
-| **Use Case** | UC-3 | Course Management |  | ✓ |  | Course Management Service defined; workflows refined in later iterations. |
-| **Use Case** | UC-4 | Notifications |  | ✓ |  | Notification Service identified; rules and event triggers defined later. |
-| **Use Case** | UC-5 | System Administration |  | ✓ |  | Admin functions supported through Gateway, Monitoring, Integration Services. |
-| **Use Case** | UC-6 | System Maintenance |  | ✓ |  | Logging and Monitoring Service addresses maintainer needs. |
-| **Quality Attribute** | QA-1 | Performance |  | ✓ |  | Autoscaling, caching, and async processing reduce latency. |
-| **Quality Attribute** | QA-2 | Availability |  | ✓ |  | Multi-instance deployment + load balancing planned. |
-| **Quality Attribute** | QA-3 | Security |  | ✓ |  | SSO, API Gateway, encryption planned; enforcement refined later. |
-| **Quality Attribute** | QA-4 | Modifiability |  | ✓ |  | Microservices enable independent updates. |
-| **Quality Attribute** | QA-6 | Scalability |  | ✓ |  | Cloud-native autoscaling supports growth. |
-| **Quality Attribute** | QA-7 | Reliability |  | ✓ |  | Redis fallback + retry logic for external service failures. |
-| **Constraint** | CON-1–10 | All system constraints |  | ✓ |  | All constraints addressed in high-level architecture. |
-| **Concern** | CRN-1–5 | All architectural concerns |  | ✓ |  | Integration, security, model updates, scalability, UI concerns considered. |
+| **Item** | **Not Addressed** | **Partially Addressed** | **Completely Addressed** | **Design Decisions Made During Iteration** |
+|----------|--------------------|--------------------------|---------------------------|---------------------------------------------|
+| **UC-1** |                    |        ✓                    |                        | Selection of RIA + Service Application architecture; introduction of ConversationService and AIOrchestrator to support conversational flows. |
+| **UC-2** |                    |         ✓                  |                         | Introduction of DashboardService and module view that aggregates data via adapters. |
+| **UC-3** |                    |           ✓                |                         | Introduction of CourseManagementService and separation of client/server layers to support lecturer workflows. |
+| **UC-5** |                    |               ✓            |                        | Introduction of CourseManagementService and separation of client/server layers to support lecturer workflows. |
+| **QA-1** |          ✓           |                    |                           | No detailed performance tactics yet; stateless services and three-tier structure selected as base. |
+| **QA-2** |                    | ✓                        |                           | Three-tier deployment with potential replication of app and data tiers; decisions on redundancy postponed to later iterations. |
+| **QA-3** |                    |      ✓                     |                    | Introduction of API Gateway with SSO and RBAC enforcement; admin console separated from student UI. |
+| **QA-4** |                    |      ✓                     |                      | Use of layered services, adapters for external systems, and an AIOrchestrator module for model changes. |
+| **QA-6** |                    |       ✓                    |                       | Stateless services and module boundaries identified; they can be independently scaled. |
+| **QA-8** |                    |                       |      ✓                  | Explicit Integration layer with LMS/SIS/Calendar/Email adapters. |
+| **CON-1 to CON-9** |          | ✓                        |                           | Architectural structure supports constraints (cloud, SSO, RBAC, secure APIs, separate admin paths). Detailed policies left for later iterations. |
+| **CRN-1** |                   |                          | ✓                         | Overall system structure has been established. |
+| **CRN-2 to CRN-5** |          | ✓                        |                           | Architecture supports future security, model, scalability, and UI decisions but does not fully specify them yet. |
+
 
 ### **Iteration Goal Status**
 The goal of Iteration 1—**establishing the overall system structure for AIDAP**—has been successfully achieved.  
-All drivers are **partially addressed**, which is appropriate for this stage of the ADD process. Further refinement and detailed behavior will be completed in Iteration 2.
+Most of drivers are **partially addressed**, which is appropriate for this stage of the ADD process. Further refinement and detailed behavior will be completed in Iteration 2.
