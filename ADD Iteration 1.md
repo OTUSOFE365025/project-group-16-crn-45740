@@ -200,7 +200,59 @@ Later iterations will refine specific components and use cases.
 
 ## Step 6: Sketch Views and Record Design Decisions
 
-### 6.1 High-Level Context Diagram
+### Table 6.1 – Module View Elements and Responsibilities
+
+| Element | Layer | Responsibilities |
+|---------|--------|------------------|
+| **Client Tier** | — | Container for all user-facing applications (web/mobile). Sends requests to backend and renders responses. |
+| **Student Web Client** | Client | Browser UI for students. Provides AI assistant, academic dashboard, and basic course views. |
+| **Lecturer Web Client** | Client | Browser UI for lecturers. Access to course dashboards and management screens based on role. |
+| **Admin Console** | Client | Web UI for system administrators to configure integrations, policies, and model settings. |
+| **Mobile Client (optional)** | Client | Mobile interface for students to access chat and dashboard. Uses same backend APIs. |
+| **API Gateway** | Application | Entry point for client requests. Validates SSO tokens, enforces RBAC, rate limits, logs requests, and routes to backend services. |
+| **Conversation Service** | Application | Manages AI assistant flows: sessions, turns, calls AI Orchestrator, composes replies. Supports UC-1. |
+| **Dashboard Service** | Application | Aggregates academic data for dashboard view (courses, assignments, announcements). Supports UC-2. |
+| **Course Management Service** | Application | Lecturer operations: posting announcements, managing course content. Supports UC-3. |
+| **Admin Service** | Application | System admin functionality: integrations, policies, model settings. Supports UC-5. |
+| **AI Orchestrator** | Application | Handles prompt creation, model selection, inference, external data merging. |
+| **Notification Service (planned)** | Application | Sends notifications based on events and preferences. |
+| **LMS Adapter** | Integration | Wraps LMS API. Translates calls between AIDAP and LMS. |
+| **SIS Adapter** | Integration | Interfaces with Registration/SIS system for enrolment/records. |
+| **Calendar/Email Adapter** | Integration | Connects to institutional messaging systems for notifications. |
+| **Operational Database** | Data | Stores domain data: users, profiles, conversations, course data, policies, configs. |
+| **Analytics Database** | Data | Stores aggregated/historical data for reporting and metrics. |
+| **Cache Store** | Data | In-memory cache for performance (e.g., dashboard and conversation context). |
+| **Object Storage** | Data | Stores large binary artifacts (attachments, exports). |
+| **Backup Storage** | Data | Long-term backups and retention for databases and objects. |
+
+### Table 6.2 – Deployment Elements and Responsibilities
+
+| Deployment Element | Responsibilities |
+|--------------------|------------------|
+| **User Device (Browser / Mobile App)** | Renders UI, handles user input, sends HTTPS requests to backend. |
+| **Public Network / Internet** | Secure transport layer (HTTPS/TLS) between client and cloud. |
+| **Load Balancer / API Entry Node** | Routes traffic to AIDAP app servers, terminates TLS, handles blue/green rollouts. |
+| **AIDAP App Server (xN, stateless)** | Hosts application tier: API Gateway, services, AI Orchestrator, integration adapters. Scales horizontally. |
+| **Managed Database Cluster** | Durable, replicated storage of operational domain data. |
+| **Cache Node(s)** | Distributed in-memory cache for performance. |
+| **Object Storage Service** | Stores large assets (documents, attachments, exports). |
+| **Backup / Archival Service** | Long-term storage of backups for disaster recovery. |
+| **External LMS System** | Source of course materials, grades, assignments; accessed via LMS Adapter. |
+| **External Registration / SIS System** | Provides enrolment and student information via SIS Adapter. |
+| **External Calendar / Email System** | Delivers notifications, email, and event pushes. |
+
+### Table 6.3 – Summary of Key Relationships Between Elements
+
+| From Element | To Element | Relationship / Interaction |
+|--------------|------------|-----------------------------|
+| Student / Lecturer / Admin Clients | API Gateway | Sends HTTPS requests for chat, dashboard, course mgmt, and admin actions. |
+| API Gateway | Backend Services | Validates requests, enforces RBAC, routes to proper service. |
+| Backend Services | Operational Database | Reads/writes domain data (users, courses, conversations, announcements, policies). |
+| Backend Services | Cache Store | Retrieves and stores frequently accessed data to improve performance. |
+| Backend Services | Integration Adapters | Calls external systems securely (LMS, SIS, Calendar/Email). |
+| Integration Adapters | External Systems | Executes institution’s official API calls and returns normalized data. |
+| App Servers | Analytics DB / Object Storage / Backups | Sends logs, metrics, large objects, and backup data. |
+| Load Balancer | App Servers | Distributes requests across stateless app instances. |
 
 ## Step 7: Analysis of Current Design (Kanban Progress)
 
