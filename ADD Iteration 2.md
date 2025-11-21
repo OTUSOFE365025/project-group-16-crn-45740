@@ -102,10 +102,20 @@ The elements refined in this iteration are the modules located in the client and
 ---
 ## Step 6:
 **DOMAIN MODEL:**
+
+
 **MODULE VIEW:**
+
+
 **USE CASE 1:**
+
+
 **USE CASE 2:**
+
+
 **USE CASE3:**
+
+
 **USE CASE 5:**
 
 ---
