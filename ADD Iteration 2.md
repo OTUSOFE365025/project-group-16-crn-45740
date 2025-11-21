@@ -87,4 +87,17 @@ The elements refined in this iteration are the modules located in the client and
 
 ---
 
+## Step 5: Instantiate Architectural Elements, Allocate Responsibilities, and Define Interfaces
+
+| Design Decisions and Location | Rationale |
+|------------------------------|-----------|
+| **Create a Domain Model for AIDAP (Central Domain Layer)** | The domain model is required to identify and stabilize the main entities of the system (User, Course, Enrollment, ConversationSession, etc.). Without a domain model, the architecture becomes ad hoc and inconsistent. The FCAPS example mandates domain modeling before modular decomposition. |
+| **Identify Domain Objects that map directly to UC-1, UC-2, UC-3, and UC-5** | Each primary use case involves distinct “conceptual building blocks” (e.g., ConversationSession for UC-1; Enrollment for UC-2; Course for UC-3; Policy & ModelConfig for UC-5). Identifying domain objects clarifies boundaries, responsibilities, and supports CRN-5 (usable UI) and QA-4 (modifiability). |
+| **Decompose domain objects across layers (Presentation, Business Logic, Domain, Integration/Data)** | Following FCAPS, domain objects do not directly become modules; they must be realized by components across layers. This provides clear responsibilities, improves testability (QA-9), and aligns services with UC-1, UC-2, UC-3, UC-5. |
+| **Introduce dedicated domain-level managers (AIOrchestrator, PolicyManager, IntegrationManager, ModelManager)** | These managers encapsulate complex logic unique to AIDAP (model switching, integration configuration, policy enforcement). Supports QA-4 (modifiability), CRN-3 (AI evolution), and CON-1 (integration requirements). |
+| **Group backend modules by primary use case → ConversationService, DashboardService, CourseManagementService, AdminService** | Mirrors FCAPS modular design. Reduces coupling by ensuring each service owns a well-defined responsibility that directly corresponds to a primary UC. Helps CRN-1 (overall system structure) and creates team boundaries (if needed). |
+| **Define initial interfaces using UC-driven sequence diagrams** | Per FCAPS: sequence diagrams → interface extraction. Methods such as generateReply(), postTurn(), findEnrollments(), updateLmsConfig() become explicit API and service interfaces. Supports QA-4 (modifiability) and QA-8 (interoperability). |
+| **Separate Integration Layer modules (LMSAdapter, SISAdapter, CalendarAdapter, EmailAdapter)** | Required to satisfy CON-1. Provides clean isolation between AIDAP and external systems. Supports QA-8 (interoperability) and QA-4 (ease of replacing/changing backends). |
+
+---
 
