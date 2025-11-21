@@ -104,19 +104,117 @@ The elements refined in this iteration are the modules located in the client and
 **DOMAIN MODEL:**
 
 
+| Domain Entity        | Responsibility / Role                                                         |
+|----------------------|--------------------------------------------------------------------------------|
+| User                 | Represents a system user (student, lecturer, admin).                           |
+| StudentProfile       | Student-specific identifiers and metadata.                                     |
+| LecturerProfile      | Lecturer-specific identifiers and permissions.                                 |
+| AdminProfile         | Admin-level identifiers for privileged actions.                                |
+| Course               | Represents an academic course.                                                 |
+| CourseSection        | Represents a section of a course.                                              |
+| Enrollment           | Links students to course sections.                                             |
+| Assignment           | Represents coursework, deadlines, grading items.                               |
+| Announcement         | Represents course announcements posted by lecturers.                            |
+| ConversationSession  | Represents a persistent chat session with AIDAP.                               |
+| ConversationTurn     | Represents one message/response pair in the chat flow.                         |
+| NotificationPreference | User preferences for notification delivery.                                  |
+| Policy               | A system or governance rule.                                                   |
+| ModelConfig          | AI model settings/configurations.                                              |
+| DataSourceConfig     | LMS/SIS/Calendar/Email connection settings.                                    |
+| IntegrationState     | (Optional) Health + status of external integrations.                           |
+
 **MODULE VIEW:**
 
 
-**USE CASE 1:**
+**Elements and Responsibilities:**
+
+| Element                     | Layer                     | Responsibility Description                                                                 |
+|-----------------------------|---------------------------|---------------------------------------------------------------------------------------------|
+| ChatUI                      | Client – Presentation     | Displays chat interface; captures user input; shows responses. Supports UC-1.              |
+| DashboardUI                 | Client – Presentation     | Displays academic dashboard: courses, deadlines, announcements. Supports UC-2.             |
+| CourseAdminUI               | Client – Presentation     | UI for lecturers to manage course content. Supports UC-3.                                   |
+| AdminConsoleUI              | Client – Presentation     | UI for admins to manage integrations, policies, models. Supports UC-5.                     |
+| ChatController              | Client – Business Logic   | Coordinates ChatUI → APIClient calls; updates UI state.                                    |
+| DashboardController         | Client – Business Logic   | Coordinates dashboard data retrieval.                                                       |
+| CourseAdminController       | Client – Business Logic   | Coordinates actions like posting announcements.                                             |
+| AdminController             | Client – Business Logic   | Coordinates admin functions via backend APIs.                                               |
+| APIClient                   | Client – Communication    | Common HTTP client wrapper for backend service calls.                                       |
+| ConversationAPI             | Server – Services         | REST endpoints for conversation operations.                                                 |
+| DashboardAPI                | Server – Services         | REST endpoints for dashboard data.                                                          |
+| CourseAdminAPI              | Server – Services         | REST endpoints for course management.                                                       |
+| AdminAPI                    | Server – Services         | REST endpoints for admin configuration.                                                     |
+| ConversationService         | Server – Business Logic   | Implements UC-1: manages sessions, turns, calls AIOrchestrator.                             |
+| DashboardService            | Server – Business Logic   | Implements UC-2: aggregates course, assignment, announcement data.                          |
+| CourseManagementService     | Server – Business Logic   | Implements UC-3: verifies lecturer access, manages course entities.                         |
+| AdminService                | Server – Business Logic   | Implements UC-5: config management, policy enforcement, model management.                   |
+| AIOrchestrator              | Server – Business Logic   | Builds prompts, queries adapters, calls AI model.                                           |
+| PolicyManager               | Domain / Business         | Manages governance and access policies.                                                     |
+| IntegrationManager          | Domain / Business         | Validates, stores, tests external integration config.                                       |
+| ModelManager                | Domain / Business         | Stores and updates AI model configuration.                                                  |
+| Domain Entities             | Domain Layer              | User, Course, Enrollment, ConversationSession, Announcement, etc.                           |
+| LMSAdapter                  | Integration Layer         | Integrates with LMS via secure API.                                                         |
+| SISAdapter                  | Integration Layer         | Integrates with student information system.                                                 |
+| CalendarAdapter             | Integration Layer         | Integrates with calendar API.                                                               |
+| EmailAdapter                | Integration Layer         | Sends or triggers notifications.                                                            |
+| Repositories (various)      | Data Access Layer         | CRUD operations for domain entities.                                                        |
 
 
-**USE CASE 2:**
+**USE CASE 1:Student AI Assistant**
 
 
-**USE CASE3:**
+| Element               | Method Signature                                     | Description                                              |
+|-----------------------|------------------------------------------------------|----------------------------------------------------------|
+| ChatController        | sendMessage(text)                                    | Sends user text to backend via APIClient.               |
+| APIClient             | postTurn(sessionId, text) : ConversationTurnDTO       | Sends POST request to ConversationAPI.                  |
+| ConversationAPI       | handlePostTurn(requestDTO)                           | Validates request → delegates to ConversationService.   |
+| ConversationService   | handleUserTurn(sessionId, text)                      | Loads session, calls AI, stores turn.                  |
+| AIOrchestrator        | generateReply(context) : AIReply                     | Builds prompt, queries adapters, calls model.           |
+| LMSAdapter            | getUpcomingAssessments(studentId)                    | Gets deadlines to support UC-1 contextual answers.      |
+| ConversationRepository| saveTurn(sessionId, turn)                             | Persists conversation turn.                             |
+| ChatUI                | displayReply(ConversationTurnDTO)                    | Renders the AI/system reply to user.                   |
 
 
-**USE CASE 5:**
+**USE CASE 2:Academic Dashboard**
+
+| Element                | Method Signature                                     | Description                                              |
+|------------------------|------------------------------------------------------|----------------------------------------------------------|
+| DashboardController    | loadDashboard()                                      | Requests dashboard via APIClient.                       |
+| APIClient              | getDashboard() : DashboardDTO                        | GET /dashboard/me → DashboardAPI.                       |
+| DashboardAPI           | getPersonalDashboard() : DashboardDTO                | Validates user, delegates to DashboardService.          |
+| DashboardService       | getPersonalDashboard(userId) : DashboardDTO          | Aggregates course, assignment, announcement data.       |
+| EnrollmentRepository   | findByUser(userId)                                   | Gets enrolments.                                        |
+| CourseRepository       | findCourses(enrollments)                             | Retrieves corresponding courses.                        |
+| AssignmentRepository   | findUpcomingAssignments(courses)                     | Gets deadlines.                                         |
+| AnnouncementRepository | findRecentAnnouncements(courses)                     | Gets announcements.                                     |
+| LMSAdapter             | fetchLiveData(courses)                               | Optional live LMS enrichment.                           |
+| DashboardUI            | renderDashboard(DashboardDTO)                        | Renders dashboard info.                                 |
+
+**USE CASE3:Course Management**
+
+| Element                 | Method Signature                                       | Description                                           |
+|-------------------------|--------------------------------------------------------|-------------------------------------------------------|
+| CourseAdminController   | postAnnouncement(courseId, text)                       | Sends announcement text via APIClient.               |
+| APIClient               | postAnnouncement(courseId, text) : AnnouncementDTO     | POST to CourseAdminAPI.                               |
+| CourseAdminAPI          | createAnnouncement(courseId, requestDTO)               | Validates lecturer permissions.                       |
+| CourseManagementService | postAnnouncement(courseId, userId, text)               | Creates announcement + verifies access.               |
+| CourseRepository        | verifyLecturerAccess(courseId, userId)                 | Authorization check.                                  |
+| AnnouncementRepository  | save(Announcement) : Announcement                      | Stores new announcement.                              |
+| NotificationService     | notifyEnrolledStudents(courseId, announcement)         | Sends notifications.                                  |
+| CourseAdminUI           | showAnnouncement(AnnouncementDTO)                      | Updates UI with new announcement.                     |
+
+
+**USE CASE 5:System Administration**
+
+| Element                 | Method Signature                                        | Description                                           |
+|-------------------------|---------------------------------------------------------|-------------------------------------------------------|
+| AdminController         | updateLmsConfig(newConfig)                              | Triggers update from UI.                              |
+| APIClient               | putLmsConfig(newConfig) : UpdateResultDTO               | PUT request → AdminAPI.                               |
+| AdminAPI                | updateLmsConfig(requestDTO) : UpdateResultDTO           | Validates SSO + RBAC; delegates to AdminService.      |
+| AdminService            | updateLmsConfig(newConfig) : UpdateResultDTO            | Coordinates config update & validation.               |
+| IntegrationManager      | updateConfig(systemType, newConfig) : Result            | Validates + persists DataSourceConfig.                |
+| DataSourceConfigRepository | save(config)                                         | Persists integration configuration.                   |
+| LMSAdapter              | testConnection(newConfig) : TestResult                  | Tests new LMS connection settings.                    |
+| AdminConsoleUI          | showResult(UpdateResultDTO)                             | Displays outcome to admin.                            |
 
 ---
 ## Step 7:
