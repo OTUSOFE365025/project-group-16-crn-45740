@@ -159,7 +159,11 @@ The elements refined in this iteration are the modules located in the client and
 | Repositories (various)      | Data Access Layer         | CRUD operations for domain entities.                                                        |
 
 
-**USE CASE 1:Student AI Assistant**
+**UC-1 – Student AI Assistant:**  
+This use case allows a student to interact with AIDAP through a conversational interface.  
+The student can ask questions about courses, deadlines, announcements, or general academic support.  
+AIDAP retrieves relevant academic data, processes the query through the AI Orchestrator, and provides a contextual, useful response.
+
 
 
 | Element               | Method Signature                                     | Description                                              |
@@ -174,7 +178,11 @@ The elements refined in this iteration are the modules located in the client and
 | ChatUI                | displayReply(ConversationTurnDTO)                    | Renders the AI/system reply to user.                   |
 
 
-**USE CASE 2:Academic Dashboard**
+**UC-2 – Academic Dashboard:**  
+This use case provides the user (student or lecturer) with a personalized dashboard view.  
+The dashboard aggregates upcoming deadlines, course enrollments, announcements, and other academic insights.  
+It fetches and compiles data from multiple repositories and external systems to present a complete academic overview.
+
 
 | Element                | Method Signature                                     | Description                                              |
 |------------------------|------------------------------------------------------|----------------------------------------------------------|
@@ -189,7 +197,11 @@ The elements refined in this iteration are the modules located in the client and
 | LMSAdapter             | fetchLiveData(courses)                               | Optional live LMS enrichment.                           |
 | DashboardUI            | renderDashboard(DashboardDTO)                        | Renders dashboard info.                                 |
 
-**USE CASE3:Course Management**
+**UC-3 – Course Management:**  
+This use case enables lecturers to manage course-related content.  
+They can create or update assignments, post announcements, and manage course sections.  
+The system verifies lecturer permissions, stores new content, and optionally triggers notifications to students.
+
 
 | Element                 | Method Signature                                       | Description                                           |
 |-------------------------|--------------------------------------------------------|-------------------------------------------------------|
@@ -203,7 +215,11 @@ The elements refined in this iteration are the modules located in the client and
 | CourseAdminUI           | showAnnouncement(AnnouncementDTO)                      | Updates UI with new announcement.                     |
 
 
-**USE CASE 5:System Administration**
+**UC-5 – System Administration:**  
+This use case allows system administrators to manage AIDAP’s configuration and operational settings.  
+Admins can update integration details (e.g., LMS or SIS APIs), modify system policies, and change AI model configurations.  
+These updates are validated, stored, and tested to ensure system-wide consistency and reliability.
+
 
 | Element                 | Method Signature                                        | Description                                           |
 |-------------------------|---------------------------------------------------------|-------------------------------------------------------|
