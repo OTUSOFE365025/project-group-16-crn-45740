@@ -70,4 +70,21 @@ The following concerns have been selected as drivers:
 | **CRN-5** | Maintaining intuitive, multi-language UI with fast responses (<2 s) during input and output, focusing on usability and accessibility across devices. |
 
 ---
+## Step 3: Choose One or More Elements of the System to Refine
+
+The elements refined in this iteration are the modules located in the client and server layers defined by the RIA architecture and the Service Application pattern from Iteration 1. This iteration focuses on refining the modules within them and identifying how they collaborate to support the system's primary functionality through the chosen Use Cases.
+
+---
+
+## Step 4: Choose One or More Design Concepts That Satisfy the Selected Drivers
+
+| Design Decisions and Location | Rationale and Assumptions |
+|------------------------------|----------------------------|
+| **Create a Domain Model for the AIDAP application** | Before functional decomposition, we identify the main entities (User, Course, ConversationSession, etc.) and their relationships so that modules can be organized around them. Without an explicit domain model, the architecture would become ad hoc and harder to maintain. |
+| **Identify Domain Objects that map to the functional requirements (UC-1, UC-2, UC-3, UC-5)** | Each distinct functional element (e.g., “Conversational Help”, “Dashboard Aggregation”, “Course Management”, “System Configuration”) is encapsulated into a **domain object** that owns core responsibilities. |
+| **Decompose Domain Objects into components across layers** | Domain objects represent coherent sets of functionality; they must be realized by finer-grained modules in UI, business logic, and data layers. This decomposition allows clear responsibilities and testable implementation units. |
+| **Implement dependency injection / IoC to connect components** | Enables unit-testing of services (supporting QA-9) and easier substitution of components (e.g., different AI models or external systems) without wide-ranging code changes, supporting QA-4. |
+
+---
+
 
