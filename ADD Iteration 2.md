@@ -100,7 +100,15 @@ The elements refined in this iteration are the modules located in the client and
 | **Separate Integration Layer modules (LMSAdapter, SISAdapter, CalendarAdapter, EmailAdapter)** | Required to satisfy CON-1. Provides clean isolation between AIDAP and external systems. Supports QA-8 (interoperability) and QA-4 (ease of replacing/changing backends). |
 
 ---
+## Step 6:
+**DOMAIN MODEL:**
+**MODULE VIEW:**
+**USE CASE 1:**
+**USE CASE 2:**
+**USE CASE3:**
+**USE CASE 5:**
 
+---
 ## Step 7:
 
 | Not Addressed | Partially Addressed | Completely Addressed | Design Decisions Made During Iteration |
