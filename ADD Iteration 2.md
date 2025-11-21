@@ -1,7 +1,6 @@
 # Iteration 2:
 
 ## Step 2: Establish Iteration Goal
-
 The goal of this iteration is to address the general architectural concern of identifying structures to support primary functionality.
 
 ---
@@ -12,7 +11,10 @@ The primary use cases were determined to be:
 
 | Primary Functional Requirements | Details |
 |--------------------------------|---------|
-|  | • **UC-1: Student AI Assistant** | Because it is a core service for student use. Students ask academic questions using AI and receive personalized answers. <br> • **UC-2: Academic Dashboard** | Because it is a core functionality for the system view. Displays grades, deadlines, schedules, and analytics. <br> • **UC-3: Course Management** | Because it is a core functionality for lecturer & faculty operations. Lecturers upload/update course content and view analytics. <br> • **UC-5: System Administration** | Because it is important for institutional governance. Administrators define policies, manage integrations, and oversee announcements. |
+| **UC-1: Student AI Assistant** | Because it is a core service for student use. Students ask academic questions using AI and receive personalized answers. |
+| **UC-2: Academic Dashboard** | Because it is a core functionality for the system view. Displays grades, deadlines, schedules, and analytics. |
+| **UC-3: Course Management** | Because it is a core functionality for lecturer & faculty operations. Lecturers upload/update course content and view analytics. |
+| **UC-5: System Administration** | Because it is important for institutional governance. Administrators define policies, manage integrations, and oversee announcements. |
 
 ---
 
@@ -37,7 +39,65 @@ From this list, only are selected as the prioritized QA’s for this iteration:
 
 ---
 
+## Constraints
 
+The following constraints have been selected as drivers:
+
+| Constraint ID | Details |
+|---------------|---------|
+| **CON-1** | The AIDAP platform must connect securely with existing university systems such as registration, calendar, and LMS using standard REST or GraphQL APIs to exchange data in real time. |
+| **CON-2** | All users are required to authenticate through the institution’s Single Sign-On (SSO) before using any of the assistant’s features. |
+| **CON-3** | The system has to be deployed on a cloud environment to allow flexible scaling and continuous availability, even when updates or patches are applied. |
+| **CON-4** | User and institutional data must be encrypted during storage and transmission, and handled according to the university’s privacy and security standards. |
+| **CON-5** | The AI assistant should respond to user queries with an average latency of around 2 seconds under normal load. |
+| **CON-6** | Only authorized users can access data relevant to their roles (student, lecturer, or admin), and unauthorized attempts must be logged for auditing. |
+| **CON-7** | The system must automatically perform backups of user interactions, model configurations, and system data to ensure recovery in case of a failure. |
+| **CON-8** | Notifications, alerts, and announcements must reach the correct users based on their preferences and chosen language. |
+| **CON-9** | System performance and availability metrics must be tracked in real time and displayed on a dashboard accessible only to maintainers and administrators. |
+
+---
+
+## Architectural Concerns
+
+The following concerns have been selected as drivers:
+
+| Concern ID | Details |
+|-------------|---------|
+| **CRN-1** | Maintaining multiple integrated external systems and other data resources , along with ensuring data consistency,synchronization and fault recovery when the systems experience downtime. |
+| **CRN-2** | Protection of user’s data that is sensitive and ensure compliance with privacy regulations, since the AIDP system saves historical interactions of its users. |
+| **CRN-3** | Managing AI model updates and configuration by supporting configuration of AI model versions and API keys,and ensuring that model updates do not interrupt service availability. |
+| **CRN-4** | Having cloud-based architecture patterns(auto-scaling, message queues, etc.) to improve scalability and availability. |
+| **CRN-5** | Maintaining intuitive, multi-language UI with fast responses (<2 s) during input and output, focusing on usability and accessibility across devices. |
+
+---
+## Step 3: Choose One or More Elements of the System to Refine
+
+The elements refined in this iteration are the modules located in the client and server layers defined by the RIA architecture and the Service Application pattern from Iteration 1. This iteration focuses on refining the modules within them and identifying how they collaborate to support the system's primary functionality through the chosen Use Cases.
+
+---
+
+## Step 4: Choose One or More Design Concepts That Satisfy the Selected Drivers
+
+| Design Decisions and Location | Rationale and Assumptions |
+|------------------------------|----------------------------|
+| **Create a Domain Model for the AIDAP application** | Before functional decomposition, we identify the main entities (User, Course, ConversationSession, etc.) and their relationships so that modules can be organized around them. Without an explicit domain model, the architecture would become ad hoc and harder to maintain. |
+| **Identify Domain Objects that map to the functional requirements (UC-1, UC-2, UC-3, UC-5)** | Each distinct functional element (e.g., “Conversational Help”, “Dashboard Aggregation”, “Course Management”, “System Configuration”) is encapsulated into a **domain object** that owns core responsibilities. |
+| **Decompose Domain Objects into components across layers** | Domain objects represent coherent sets of functionality; they must be realized by finer-grained modules in UI, business logic, and data layers. This decomposition allows clear responsibilities and testable implementation units. |
+| **Implement dependency injection / IoC to connect components** | Enables unit-testing of services (supporting QA-9) and easier substitution of components (e.g., different AI models or external systems) without wide-ranging code changes, supporting QA-4. |
+
+---
+
+## Step 5: Instantiate Architectural Elements, Allocate Responsibilities, and Define Interfaces
+
+| Design Decisions and Location | Rationale |
+|------------------------------|-----------|
+| **Create a Domain Model for AIDAP (Central Domain Layer)** | The domain model is required to identify and stabilize the main entities of the system (User, Course, Enrollment, ConversationSession, etc.). Without a domain model, the architecture becomes ad hoc and inconsistent. The FCAPS example mandates domain modeling before modular decomposition. |
+| **Identify Domain Objects that map directly to UC-1, UC-2, UC-3, and UC-5** | Each primary use case involves distinct “conceptual building blocks” (e.g., ConversationSession for UC-1; Enrollment for UC-2; Course for UC-3; Policy & ModelConfig for UC-5). Identifying domain objects clarifies boundaries, responsibilities, and supports CRN-5 (usable UI) and QA-4 (modifiability). |
+| **Decompose domain objects across layers (Presentation, Business Logic, Domain, Integration/Data)** | Following FCAPS, domain objects do not directly become modules; they must be realized by components across layers. This provides clear responsibilities, improves testability (QA-9), and aligns services with UC-1, UC-2, UC-3, UC-5. |
+| **Introduce dedicated domain-level managers (AIOrchestrator, PolicyManager, IntegrationManager, ModelManager)** | These managers encapsulate complex logic unique to AIDAP (model switching, integration configuration, policy enforcement). Supports QA-4 (modifiability), CRN-3 (AI evolution), and CON-1 (integration requirements). |
+| **Group backend modules by primary use case → ConversationService, DashboardService, CourseManagementService, AdminService** | Mirrors FCAPS modular design. Reduces coupling by ensuring each service owns a well-defined responsibility that directly corresponds to a primary UC. Helps CRN-1 (overall system structure) and creates team boundaries (if needed). |
+| **Define initial interfaces using UC-driven sequence diagrams** | Per FCAPS: sequence diagrams → interface extraction. Methods such as generateReply(), postTurn(), findEnrollments(), updateLmsConfig() become explicit API and service interfaces. Supports QA-4 (modifiability) and QA-8 (interoperability). |
+| **Separate Integration Layer modules (LMSAdapter, SISAdapter, CalendarAdapter, EmailAdapter)** | Required to satisfy CON-1. Provides clean isolation between AIDAP and external systems. Supports QA-8 (interoperability) and QA-4 (ease of replacing/changing backends). |
 
 ---
 
