@@ -86,12 +86,24 @@ The following QAs have the highest impact and difficulty and are selected as **d
 **Establish an overall system structure for AIDAP.**
 
 The goal of this iteration is to establish an overall system structure for AIDAP. This will also go a long way to achieving CRN-1 which focuses on maintaining the multiple integrated external systems and other data resources, thus it will be our main iteration goal.
-In the design of the overall system is the architecture should be mindful of : 
-  -all the selected Quality Attribute Scenario drivers : QA-1, QA-2, QA-3, QA-4, QA-6, QA-8
-  -all the selected Use Case drivers: UC-1, UC-2, UC-3, UC-5
-  -CON-1: The AIDAP platform must connect securely with existing university systems such as registration, calendar, and LMS using                 standard REST or GraphQL APIs to exchange data in real time.
-  -CON-3: The system has to be deployed on a cloud environment to allow flexible scaling and continuous availability, even when updates           or patches are applied.
-   -CON-7: The system must automatically perform backups of user interactions, model configurations, and system data to ensure recovery            in case of a failure.
+
+In the design of the overall system, the architecture should be mindful of:
+
+- All the selected Quality Attribute Scenario drivers:  
+  QA-1, QA-2, QA-3, QA-4, QA-6, QA-8
+
+- All the selected Use Case drivers:  
+  UC-1, UC-2, UC-3, UC-5
+
+- **CON-1:**  
+  The AIDAP platform must connect securely with existing university systems such as registration, calendar, and LMS using standard REST or GraphQL APIs to exchange data in real time.
+
+- **CON-3:**  
+  The system has to be deployed on a cloud environment to allow flexible scaling and continuous availability, even when updates or patches are applied.
+
+- **CON-7:**  
+  The system must automatically perform backups of user interactions, model configurations, and system data to ensure recovery in case of a failure.
+
 
 **CONTEXT DIAGRAM:**
 
