@@ -202,57 +202,78 @@ Later iterations will refine specific components and use cases.
 
 ### Table 6.1 – Module View Elements and Responsibilities
 
-| Element | Layer | Responsibilities |
-|---------|--------|------------------|
-| **Client Tier** | — | Container for all user-facing applications (web/mobile). Sends requests to backend and renders responses. |
-| **Student Web Client** | Client | Browser UI for students. Provides AI assistant, academic dashboard, and basic course views. |
-| **Lecturer Web Client** | Client | Browser UI for lecturers. Access to course dashboards and management screens based on role. |
-| **Admin Console** | Client | Web UI for system administrators to configure integrations, policies, and model settings. |
-| **Mobile Client (optional)** | Client | Mobile interface for students to access chat and dashboard. Uses same backend APIs. |
-| **API Gateway** | Application | Entry point for client requests. Validates SSO tokens, enforces RBAC, rate limits, logs requests, and routes to backend services. |
-| **Conversation Service** | Application | Manages AI assistant flows: sessions, turns, calls AI Orchestrator, composes replies. Supports UC-1. |
-| **Dashboard Service** | Application | Aggregates academic data for dashboard view (courses, assignments, announcements). Supports UC-2. |
-| **Course Management Service** | Application | Lecturer operations: posting announcements, managing course content. Supports UC-3. |
-| **Admin Service** | Application | System admin functionality: integrations, policies, model settings. Supports UC-5. |
-| **AI Orchestrator** | Application | Handles prompt creation, model selection, inference, external data merging. |
-| **Notification Service (planned)** | Application | Sends notifications based on events and preferences. |
-| **LMS Adapter** | Integration | Wraps LMS API. Translates calls between AIDAP and LMS. |
-| **SIS Adapter** | Integration | Interfaces with Registration/SIS system for enrolment/records. |
-| **Calendar/Email Adapter** | Integration | Connects to institutional messaging systems for notifications. |
-| **Operational Database** | Data | Stores domain data: users, profiles, conversations, course data, policies, configs. |
-| **Analytics Database** | Data | Stores aggregated/historical data for reporting and metrics. |
-| **Cache Store** | Data | In-memory cache for performance (e.g., dashboard and conversation context). |
-| **Object Storage** | Data | Stores large binary artifacts (attachments, exports). |
-| **Backup Storage** | Data | Long-term backups and retention for databases and objects. |
+### Table 6.1 – Module and Layer Descriptions
+
+| Element              | Responsibility |
+|----------------------|----------------|
+| Client Side          | Represents the user-facing side of the system, running in the browser or client application. Hosts the presentation and client-side business logic. |
+| Presentation-CS      | Client-side package that contains all UI components shown to the user. It renders chat, dashboards, and administration views. |
+| ChatUI               | Provides the chat interface where users can view conversation history and enter new messages. |
+| DashboardUI          | Displays dashboard information such as summaries, alerts, and key learning metrics for the user. |
+| CourseAdminUI        | Offers screens for course administrators and instructors to manage course details and related actions. |
+| AdminConsoleUI       | Presents administrative tools for managing system-level settings, users, and policies. |
+| BusinessLogic-CS     | Client-side controllers that coordinate user actions from the UI, perform lightweight logic, and call the `APIClient`. |
+| ChatController       | Handles events from `ChatUI`, prepares chat requests, and sends them to the server-side conversation APIs via the `APIClient`. |
+| DashboardController  | Manages user interactions in `DashboardUI`, requesting updated dashboard data from the server. |
+| CourseAdminController| Coordinates actions from `CourseAdminUI` such as viewing or updating course information and enrollment status. |
+| AdminController      | Handles operations triggered from `AdminConsoleUI`, such as managing users and policies, and forwards them to admin services. |
+| Data-CS              | Client-side data access package that encapsulates communication with the backend services. |
+| APIClient            | Generic HTTP client on the client side. Manages API calls to the server (URLs, headers, authentication, error handling) so controllers don’t deal with protocol details. |
+| Server Side          | Hosts all backend logic, APIs, integrations, and domain entities for the system. |
+| Services-SS          | Package that exposes REST APIs to the client. Each API module focuses on a specific functional area. |
+| ConversationAPI      | REST endpoints for sending messages, retrieving conversation history, and managing conversation sessions. |
+| DashboardAPI         | REST endpoints that return aggregated dashboard data and related metrics. |
+| CourseAdminAPI       | REST endpoints for course-administration operations such as course updates and enrollment management. |
+| AdminAPI             | REST endpoints that support administrative operations like user and policy management. |
+| BusinessLogic-SS     | Package that implements the core server-side business rules and workflows. |
+| ConversationService  | Applies conversation logic, coordinates AI assistance via the `AIOrchestrator`, and persists conversation data. |
+| DashboardService     | Aggregates data from domain entities and external systems to build the dashboard responses returned by `DashboardAPI`. |
+| CourseManagementService | Implements course-related workflows such as creating courses, updating details, and managing enrollments. |
+| AdminService         | Implements administrative workflows including user management, role changes, and policy updates. |
+| AIOrchestrator       | Coordinates calls to AI models/LLMs, enriches prompts with relevant context, and returns processed responses to the services. |
+| Integration/Data-SS  | Package containing adapters and repository components used to integrate with external institutional systems and the database. |
+| SISAdapter           | Connects to the Student Information System (SIS) to read and update enrollment and registration data used by the services. |
+| CalendarAdapter      | Integrates with institutional calendar services to read and modify scheduled events such as deadlines or reminders. |
+| LMSAdapter           | Integrates with the Learning Management System (LMS) to retrieve course content, grades, and learning-related information. |
+| EmailAdapter         | Handles communication with email/notification services to send system-generated messages. |
+| Repository           | Provides persistence operations for domain entities, hiding database-specific details from the services. |
+| DomainEntities-SS    | Package that defines the core domain model used throughout backend logic and APIs. |
+| User                 | Represents a user of the system (student, instructor, or administrator), including identity and role information. |
+| Course               | Represents a course, including metadata such as title, schedule, and configuration. |
+| Enrollment           | Models the relationship between users and courses, tracking which users are enrolled in which offerings. |
+| Policy               | Represents configuration rules and policies that control how the system behaves (e.g., access rules, limits). |
+| ConversationSession  | Represents an ongoing chat session between a user and the system, including timestamps and linkage to the user. |
+| ConversationTurn     | Represents a single message exchange within a conversation session, including user input and system response. |
+
 
 ### Table 6.2 – Deployment Elements and Responsibilities
 
-| Deployment Element | Responsibilities |
-|--------------------|------------------|
-| **User Device (Browser / Mobile App)** | Renders UI, handles user input, sends HTTPS requests to backend. |
-| **Public Network / Internet** | Secure transport layer (HTTPS/TLS) between client and cloud. |
-| **Load Balancer / API Entry Node** | Routes traffic to AIDAP app servers, terminates TLS, handles blue/green rollouts. |
-| **AIDAP App Server (xN, stateless)** | Hosts application tier: API Gateway, services, AI Orchestrator, integration adapters. Scales horizontally. |
-| **Managed Database Cluster** | Durable, replicated storage of operational domain data. |
-| **Cache Node(s)** | Distributed in-memory cache for performance. |
-| **Object Storage Service** | Stores large assets (documents, attachments, exports). |
-| **Backup / Archival Service** | Long-term storage of backups for disaster recovery. |
-| **External LMS System** | Source of course materials, grades, assignments; accessed via LMS Adapter. |
-| **External Registration / SIS System** | Provides enrolment and student information via SIS Adapter. |
-| **External Calendar / Email System** | Delivers notifications, email, and event pushes. |
+| Element                     | Responsibility |
+|-----------------------------|----------------|
+| Client Tier                 | The user’s device (e.g., browser or mobile client) that runs the client-side UI and sends HTTPS requests to the web/app tier. |
+| Web/App Tier                | Hosts the load balancer and application servers. Delivers web content, executes application logic, and coordinates calls to the database and external systems. |
+| Load Balancer               | Entry point for client traffic. Distributes incoming HTTPS requests across the available AIDAP application servers. |
+| AIDAP App Server 1          | Application server instance that runs the APIs, business logic, and integration components for handling user requests. |
+| AIDAP App Server 2          | Second application server instance providing redundancy and horizontal scaling for the backend. |
+| Object Storage              | Service used by the app servers to store and retrieve large or unstructured artifacts (e.g., documents, logs, exports). |
+| Database Tier               | Dedicated tier for persistent data storage used by the system. |
+| DB Cluster                  | Clustered database that stores domain entities, conversation history, user data, and configuration. |
+| External Systems            | Logical grouping of institutional and support systems that the web/app tier communicates with. |
+| Cache                       | External caching system used to store frequently accessed data and improve response times. |
+| LMS                         | Institutional Learning Management System that provides course and learning-related information. |
+| SIS                         | Student Information System that manages official enrollment and registration data. |
+| Calendar/Email              | External services used for managing calendar events and sending email or notification messages. |
+
 
 ### Table 6.3 – Summary of Key Relationships Between Elements
 
-| From Element | To Element | Relationship / Interaction |
-|--------------|------------|-----------------------------|
-| Student / Lecturer / Admin Clients | API Gateway | Sends HTTPS requests for chat, dashboard, course mgmt, and admin actions. |
-| API Gateway | Backend Services | Validates requests, enforces RBAC, routes to proper service. |
-| Backend Services | Operational Database | Reads/writes domain data (users, courses, conversations, announcements, policies). |
-| Backend Services | Cache Store | Retrieves and stores frequently accessed data to improve performance. |
-| Backend Services | Integration Adapters | Calls external systems securely (LMS, SIS, Calendar/Email). |
-| Integration Adapters | External Systems | Executes institution’s official API calls and returns normalized data. |
-| App Servers | Analytics DB / Object Storage / Backups | Sends logs, metrics, large objects, and backup data. |
-| Load Balancer | App Servers | Distributes requests across stateless app instances. |
+### Table 6.3 – Deployment Relationships
+
+| Relationship                                      | Description |
+|--------------------------------------------------|-------------|
+| Between client tier and web/app tier             | Communication uses HTTPS to send user requests from the user device to the load balancer and application servers, and to deliver responses back to the client. |
+| Between web/app tier and database tier           | Application servers communicate with the DB Cluster using database protocols (e.g., JDBC/SQL) to read and write persistent data. |
+| Between web/app tier and external systems        | Application servers access external systems (Cache, LMS, SIS, Calendar/Email) using REST APIs or service-specific endpoints to retrieve and update institutional data. |
 
 ## Step 7: Analysis of Current Design (Kanban Progress)
 
