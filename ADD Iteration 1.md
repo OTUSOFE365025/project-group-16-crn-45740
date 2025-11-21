@@ -200,8 +200,6 @@ Later iterations will refine specific components and use cases.
 
 ## Step 6: Sketch Views and Record Design Decisions
 
-### Table 6.1 – Module View Elements and Responsibilities
-
 ### Table 6.1 – Module and Layer Descriptions
 
 | Element              | Responsibility |
@@ -264,8 +262,6 @@ Later iterations will refine specific components and use cases.
 | SIS                         | Student Information System that manages official enrollment and registration data. |
 | Calendar/Email              | External services used for managing calendar events and sending email or notification messages. |
 
-
-### Table 6.3 – Summary of Key Relationships Between Elements
 
 ### Table 6.3 – Deployment Relationships
 
