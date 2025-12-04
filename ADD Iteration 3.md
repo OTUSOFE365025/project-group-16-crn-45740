@@ -68,7 +68,14 @@ The design concepts used in this iteration are the following:
 | Configure autoscaling rules for all microservices | Autoscaling is implemented as a cloud-managed component with thresholds for CPU, memory, and queue depth. This ensures that new service replicas are automatically introduced as load grows and removed when demand decreases. This instantiation directly fulfills scalability (QA-6), helps sustain availability during peak traffic (QA-2), and adheres to the cloud deployment requirements in CON-3. It is especially important for UC-1, which has a huge fluctuation in traffic. |
 
 ---
+## Step 6
+## DEPLOYMENT DIAGRAM
+<img width="747" height="729" alt="Screenshot 2025-12-03 222020" src="https://github.com/user-attachments/assets/7c1d4858-46e2-4e97-8901-704d2b6d850d" />
 
+## SEQUENCE DIAGRAM
+<img width="729" height="658" alt="Screenshot 2025-12-03 224254" src="https://github.com/user-attachments/assets/a1c1106e-1792-48a0-9d85-54e80494cbfe" />
+
+---
 ## Step 7 – Perform Analysis of Current Design and Review Iteration Goal and Achievement of Design Purpose
 
 | **Not Addressed** | **Partially Addressed** | **Completely Addressed** | **Design Decisions Made During Iteration** |
