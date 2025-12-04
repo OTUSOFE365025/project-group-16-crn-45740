@@ -4,17 +4,63 @@ SOFE3650F25 Project Assesment
  [Project Utility Tree.drawio.pdf](https://github.com/user-attachments/files/23920741/Project.Utility.Tree.drawio.pdf)
 ![Project Utility Tree](https://github.com/user-attachments/assets/3df89c29-288b-41db-bc56-c868b95013fb)
 
-## 2. ATAM Risk Assessment Table
+## 2. ATAM Risk Assessment Table (for just the 3 most important scenarios)
+## Scenario Table 1 — Performance (P1)
+| **Analysing Scenario** | **P1**                                                |
+| ---------------------- | ----------------------------------------------------- |
+| **Scenario**           | Conversational query must return within 2 seconds     |
+| **Attributes**         | Performance                                           |
+| **Stimulus**           | Student submits an AI query                           |
+| **Environment**        | Normal operating load                                 |
+| **Response**           | AI Service returns generated response through gateway |
+| **Response Measure**   | Avg response time ≤ 2s                                |
 
-| **ID** | **Type** | **Description**                                                                                                                             | **Impacted QAs**          | Reasoning                                         |
-| ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------- |
-| **R1** | **Risk** | Circuit breakers depend heavily on accurate timeout thresholds. Misconfiguration may cause premature fallback or delayed failure detection. | Availability, Performance | External system latency varies; poor tuning lowers reliability under load.       |
-| **R2** | **Risk** | Caching may return stale academic/registration data if invalidation is not aggressive.                                                      | Performance, Correctness  | ADD Iteration 3 added caching but did not define freshness strategies.           |
-| **R3** | **Risk** | Autoscaling only triggers on CPU/memory/queue depth; conversational load may not correlate to these metrics.                                | Scalability, Performance  | Traffic may spike faster than autoscaler reacts (cold-start problem).            |
-| **R4** | **Risk** | Load balancer becomes a single bottleneck if its own capacity is insufficient.                                                              | Performance, Availability | ADD Iteration 3 assumes load balancer redundancy but does not describe failover explicitly. |
-| **R5** | **Risk** | Message queue replication may increase coordination overhead, causing delays under heavy notification loads.                                | Scalability               | Multi-node synchronization may degrade throughput.                               |
+| **Architecture Decision** | **Sensitivity** | **Tradeoff** | **Risk** | **Nonrisk** |
+| ------------------------- | --------------- | ------------ | -------- | ----------- |
+| AD1 Caching Layer         | S1, S2          | T1           | R2       | N3          |
+| AD2 Load Balancing        | S3              | —            | R3       | N2          |
+| AD3 Circuit Breaker       | S1              | T4           | R1       | —           |
+| AD4 Autoscaling           | S3              | T3           | R3       | N4          |
+| AD5 API Gateway Routing   | S5              | —            | —        | N5          |
+
+## Scenario Table 2 — Availability (A1)
+| **Analysing Scenario** | **A1**                                     |
+| ---------------------- | ------------------------------------------ |
+| **Scenario**           | Failover when an AI Service instance fails |
+| **Attributes**         | Availability                               |
+| **Stimulus**           | A service replica unexpectedly crashes     |
+| **Environment**        | Normal operation with failure of one node  |
+| **Response**           | Traffic reroutes to another replica        |
+| **Response Measure**   | Failover < 1 second; no dropped sessions   |
+
+| **Architecture Decision**       | **Sensitivity** | **Tradeoff** | **Risk** | **Nonrisk** |
+| ------------------------------- | --------------- | ------------ | -------- | ----------- |
+| AD1 Service Replication         | S5              | T2           | R4       | N2          |
+| AD2 Load Balancer Health Checks | S1              | —            | R4       | N1          |
+| AD3 Circuit Breaker             | S1              | T4           | R1       | —           |
+| AD4 Rolling Updates             | —               | T2           | —        | N1          |
+| AD5 Gateway Abstraction         | —               | —            | —        | N5          |
 
 
+## Scenario Table 3 — Scalability (S1)
+| **Analysing Scenario** | **S1**                                              |
+| ---------------------- | --------------------------------------------------- |
+| **Scenario**           | System handles traffic spike situations             |
+| **Attributes**         | Scalability                                         |
+| **Stimulus**           | Large surge of concurrent student queries           |
+| **Environment**        | Peak academic load (registration/exam periods)      |
+| **Response**           | Autoscaler adds new replicas; throughput maintained |
+| **Response Measure**   | Response time < 2s under spike                      |
+
+| **Architecture Decision**       | **Sensitivity** | **Tradeoff** | **Risk** | **Nonrisk** |
+| ------------------------------- | --------------- | ------------ | -------- | ----------- |
+| AD1 Autoscaling Policies        | S3              | T3           | R3       | N4          |
+| AD2 Replicated Message Queues   | S4              | T2           | R5       | —           |
+| AD3 Microservice Independence   | —               | T5           | —        | N4          |
+| AD4 Caching Layer               | S2              | T1           | R2       | N3          |
+| AD5 Database Connection Pooling | S5              | —            | —        | —           |
+
+                            
 ## 3. ATAM Descriptions
 
 ## 3.1 Sensitivities
