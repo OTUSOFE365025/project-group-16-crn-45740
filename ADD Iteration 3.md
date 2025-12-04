@@ -74,8 +74,13 @@ The design concepts used in this iteration are the following:
 ## Deployment Diagram
 <img width="747" height="729" alt="Screenshot 2025-12-03 222020" src="https://github.com/user-attachments/assets/7c1d4858-46e2-4e97-8901-704d2b6d850d" />
 
-## Sequence Diagram
+## Sequence Diagram: UC-1
 <img width="729" height="658" alt="Screenshot 2025-12-03 224254" src="https://github.com/user-attachments/assets/a1c1106e-1792-48a0-9d85-54e80494cbfe" />
+## Sequence Diagram: UC-2
+<img width="1522" height="745" alt="usecase2" src="https://github.com/user-attachments/assets/e7fa3755-b7b2-4017-a4f8-7444d266d9c0" />
+
+## Sequence Diagram: UC-3
+<img width="1774" height="1079" alt="usecase3" src="https://github.com/user-attachments/assets/adea3183-b6a3-4ff0-9ffb-de5f6c7ca0ee" />
 
 The deployment diagram shows how AIDAP's physical structure reflects the architectural choices made in Steps 4 and 5.  By replicating the application nodes and putting them behind a cloud-native load balancer, active redundancy is supported and availability and scalability are immediately improved, guaranteeing that service delivery is not disrupted by failures or peak demand situations.  The establishment of a dedicated message queue node enables asynchronous processing of notifications and external system updates, preventing slow external resources from impacting student-facing performance.  The API Gateway centralizes request routing and security handling before delivering traffic to replicated service nodes, while the database cluster maintains consistency across all user and conversational data.
 
