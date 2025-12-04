@@ -6,7 +6,7 @@ SOFE3650F25 Project Assesment
 
 ## 2. ATAM Risk Assessment Table
 
-| **ID** | **Type** | **Description**                                                                                                                             | **Impacted QAs**          | **Reasoning **                                             |
+| **ID** | **Type** | **Description**                                                                                                                             | **Impacted QAs**          | Reasoning                                         |
 | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------- |
 | **R1** | **Risk** | Circuit breakers depend heavily on accurate timeout thresholds. Misconfiguration may cause premature fallback or delayed failure detection. | Availability, Performance | External system latency varies; poor tuning lowers reliability under load.       |
 | **R2** | **Risk** | Caching may return stale academic/registration data if invalidation is not aggressive.                                                      | Performance, Correctness  | ADD Iteration 3 added caching but did not define freshness strategies.           |
