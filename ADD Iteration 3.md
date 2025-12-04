@@ -7,7 +7,7 @@ The outcomes of the tasks completed during the third iteration of the ADD design
 
 ## Step 2 – Establish Iteration Goal by Selecting Drivers
 
-For this iteration, the architect focuses on the following quality attribute scenarios: :contentReference[oaicite:1]{index=1}  
+For this iteration, the architect focuses on the following quality attribute scenarios: 
 
 ### QA-1 — Performance  
 *A student sends a conversational query during normal load. The system returns a response within an average of 2 seconds.*  
@@ -25,7 +25,7 @@ For this iteration, the architect focuses on the following quality attribute sce
 
 ## Step 3 – Choose One or More Elements of the System to Refine
 
-For an availability scenario of this type, the elements refined in this iteration are the physical nodes previously identified in iteration 1. These include: :contentReference[oaicite:2]{index=2}  
+For an availability scenario of this type, the elements refined in this iteration are the physical nodes previously identified in iteration 1. These include: 
 
 - Application services:
   - AI Service  
