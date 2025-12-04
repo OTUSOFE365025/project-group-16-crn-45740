@@ -2,6 +2,7 @@
 SOFE3650F25 Project Assesment
 ## 1. ATAM Utility Tree
  [Project Utility Tree.drawio.pdf](https://github.com/user-attachments/files/23920741/Project.Utility.Tree.drawio.pdf)
+![Project Utility Tree](https://github.com/user-attachments/assets/3df89c29-288b-41db-bc56-c868b95013fb)
 
 ## 2. ATAM Risk Assessment Table
 
