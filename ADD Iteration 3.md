@@ -68,12 +68,18 @@ The design concepts used in this iteration are the following:
 | Configure autoscaling rules for all microservices | Autoscaling is implemented as a cloud-managed component with thresholds for CPU, memory, and queue depth. This ensures that new service replicas are automatically introduced as load grows and removed when demand decreases. This instantiation directly fulfills scalability (QA-6), helps sustain availability during peak traffic (QA-2), and adheres to the cloud deployment requirements in CON-3. It is especially important for UC-1, which has a huge fluctuation in traffic. |
 
 ---
-## Step 6
-## DEPLOYMENT DIAGRAM
+
+## Step 6 - Sketch Views and Record Design Decisions
+
+**Deployment Diagram**
 <img width="747" height="729" alt="Screenshot 2025-12-03 222020" src="https://github.com/user-attachments/assets/7c1d4858-46e2-4e97-8901-704d2b6d850d" />
 
-## SEQUENCE DIAGRAM
+**Sequence Diagram**
 <img width="729" height="658" alt="Screenshot 2025-12-03 224254" src="https://github.com/user-attachments/assets/a1c1106e-1792-48a0-9d85-54e80494cbfe" />
+
+The deployment diagram shows how AIDAP's physical structure reflects the architectural choices made in Steps 4 and 5.  By replicating the application nodes and putting them behind a cloud-native load balancer, active redundancy is supported and availability and scalability are immediately improved, guaranteeing that service delivery is not disrupted by failures or peak demand situations.  The establishment of a dedicated message queue node enables asynchronous processing of notifications and external system updates, preventing slow external resources from impacting student-facing performance.  The API Gateway centralizes request routing and security handling before delivering traffic to replicated service nodes, while the database cluster maintains consistency across all user and conversational data.
+
+The accompanying sequence diagram supports the deployment view by showing how these pieces interact at runtime.  It records the end-to-end flow of a student request, including the routing of traffic through the load balancer and gateway, processing by a replicated application instance, synchronous database transactions, and asynchronous task submission to the message queue.  This graphic highlights how the availability, performance, and scalability objectives of this iteration are jointly supported by the added redundancy and asynchronous mechanisms.
 
 ---
 ## Step 7 – Perform Analysis of Current Design and Review Iteration Goal and Achievement of Design Purpose
