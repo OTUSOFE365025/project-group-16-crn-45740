@@ -74,22 +74,41 @@ The design concepts used in this iteration are the following:
 ## Deployment Diagram (figure 6.1)
 <img width="747" height="729" alt="Screenshot 2025-12-03 222020" src="https://github.com/user-attachments/assets/7c1d4858-46e2-4e97-8901-704d2b6d850d" />
 
+  The updated deployment diagram (figure 6.1) for AIDAP shows how the design decisions from Steps 4 and 5 are realized in the actual structure of the system. The platform is accessed by instructors and students via a browser that establishes a connection with a cloud-native load balancer in front of the API Gateway. The AI Service, Dashboard Service, Notification Service, and Integration Service are hosted by two replicated application nodes behind the gateway, demonstrating the utilization of active redundancy across all crucial application services. A dedicated message queue cluster is deployed on its own node to handle asynchronous operations such as notifications and external data processing, while a replicated database cluster holds user profiles, conversational history, and aggregated academic data. Connectors from the Integration Service to university systems (LMS, Registration, Calendar, Email) highlight how external dependencies are isolated from core AIDAP functionality. Collectively, these deployment decisions support availability (QA-2), scalability (QA-6), and performance (QA-1) by eliminating single points of failure and enabling horizontal scaling under peak load.
+
 ## Sequence Diagram: UC-1 (figure 6.2)
 <img width="729" height="658" alt="Screenshot 2025-12-03 224254" src="https://github.com/user-attachments/assets/a1c1106e-1792-48a0-9d85-54e80494cbfe" />
+
+   For the main use cases covered in this iteration, three complimentary sequence diagrams were made to show how this infrastructure operates at runtime. The UC-1 sequence diagram (figure 6.2) shows how a student request is routed through the load balancer and API Gateway to one of the replicated application nodes, where the AI Service loads user context, generates a response, updates conversation history in the database, and enqueues any notification jobs for asynchronous processing. This illustrates how asynchronous background work and synchronous database operations work together to facilitate follow-up tasks while maintaining minimal latency.
 
 ## Sequence Diagram: UC-2 (figure 6.3)
 <img width="1522" height="745" alt="usecase2" src="https://github.com/user-attachments/assets/e7fa3755-b7b2-4017-a4f8-7444d266d9c0" />
 
+   An incoming event from a system like the LMS or Registration system is handled by the Integration Service, persisted, and then put in the message queue for later processing by a Notification Worker. This is where the UC-2 sequence diagram (figure 6.3) starts. The Notification Worker gets user preferences, composes an email, and sends it through the email server. This flow shows the necessity of asynchronous event processing, reliable queueing, and the decisions related with CON-8.
+
 ## Sequence Diagram: UC-3 (figure 6.4)
 <img width="1774" height="1079" alt="usecase3" src="https://github.com/user-attachments/assets/adea3183-b6a3-4ff0-9ffb-de5f6c7ca0ee" />
 
-  The updated deployment diagram (figure 6.1) for AIDAP shows how the design decisions from Steps 4 and 5 are realized in the actual structure of the system. The platform is accessed by instructors and students via a browser that establishes a connection with a cloud-native load balancer in front of the API Gateway. The AI Service, Dashboard Service, Notification Service, and Integration Service are hosted by two replicated application nodes behind the gateway, demonstrating the utilization of active redundancy across all crucial application services. A dedicated message queue cluster is deployed on its own node to handle asynchronous operations such as notifications and external data processing, while a replicated database cluster holds user profiles, conversational history, and aggregated academic data. Connectors from the Integration Service to university systems (LMS, Registration, Calendar, Email) highlight how external dependencies are isolated from core AIDAP functionality. Collectively, these deployment decisions support availability (QA-2), scalability (QA-6), and performance (QA-1) by eliminating single points of failure and enabling horizontal scaling under peak load.
-
-   For the main use cases covered in this iteration, three complimentary sequence diagrams were made to show how this infrastructure operates at runtime. The UC-1 sequence diagram (figure 6.2) shows how a student request is routed through the load balancer and API Gateway to one of the replicated application nodes, where the AI Service loads user context, generates a response, updates conversation history in the database, and enqueues any notification jobs for asynchronous processing. This illustrates how asynchronous background work and synchronous database operations work together to facilitate follow-up tasks while maintaining minimal latency.
-
-   An incoming event from a system like the LMS or Registration system is handled by the Integration Service, persisted, and then put in the message queue for later processing by a Notification Worker. This is where the UC-2 sequence diagram (figure 6.3) starts. The Notification Worker gets user preferences, composes an email, and sends it through the email server. This flow shows the necessity of asynchronous event processing, reliable queueing, and the decisions related with CON-8.
-
    Lastly, the UC-3 sequence diagram (figure 6.4) demonstrates how the Integration Service first checks a cache before gathering course, enrollment, and deadline data, storing a snapshot in the database, and returning the result to the user. It then uses a circuit breaker to safely call external systems when necessary. This demonstrates how performance and availability are supported by caching, fallback behavior, and regulated interaction with external APIs. When taken as a whole, these four diagrams show how the design choices made in iteration 3 meet those selected quality attribute situations and limitations.
+
+### Elements Added in This Iteration
+
+| **Element** | **Responsibility Description** |
+|-------------|--------------------------------|
+| **LoadBalancer** | Distributes all incoming HTTP traffic across replicated application nodes to improve availability and performance. |
+| **API Gateway Node** | Centralized entry point for client requests; handles routing, authentication, and forwards requests to backend services. |
+| **Application Node (Replica 1)** | Host environment running the AI, Dashboard, Notification, and Integration Services as part of active redundancy. |
+| **Application Node (Replica 2)** | Identical replica used for fault tolerance and horizontal scaling during peak demand. |
+| **Message Queue Cluster** | Stores and routes asynchronous jobs such as notifications and external system updates; improves responsiveness and reliability. |
+| **Database Cluster** | Replicated storage for user profiles, conversation data, and academic snapshots with improved availability and fault tolerance. |
+| **Email Server** | Sends system-generated notifications triggered by the Notification Worker. |
+| **Notification Worker** | Consumes queued jobs, retrieves user preferences, and dispatches notifications through the email server. |
+| **Cache (Integration Cache)** | Stores recently retrieved academic data to improve performance and reduce external API calls. |
+| **Circuit Breaker** | Protects the Integration Service from failures in LMS, Registration, and Calendar APIs by providing controlled fallback behavior. |
+| **LMS API** | External endpoint providing course information for academic overview queries. |
+| **Registration API** | External endpoint for enrollment and registration details accessed through the Integration Service. |
+| **Calendar API** | External endpoint providing deadlines and academic events used in UC-3. |
+
 
 
 ---
